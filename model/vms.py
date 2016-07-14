@@ -113,11 +113,15 @@ class VMsModel(object):
         self.objstore = kargs['objstore']
         self.caps = CapabilitiesModel(**kargs)
         self.task = TaskModel(**kargs)
+        self.users = import_class(
+            'plugins.kimchi.model.users.UsersModel'
+	)(**kargs)
 
     def create(self, params):
         t_name = template_name_from_uri(params['template'])
         vm_list = self.get_list()
         name = get_vm_name(params.get('name'), t_name, vm_list)
+        users = params.get('users')
         # incoming text, from js json, is unicode, do not need decode
         if name in vm_list:
             raise InvalidOperation("KCHVM0001E", {'name': name})
@@ -135,7 +139,8 @@ class VMsModel(object):
 
         t.validate()
         data = {'name': name, 'template': t,
-                'graphics': params.get('graphics', {})}
+                'graphics': params.get('graphics', {}), 'users': users}
+
         taskid = add_task(u'/plugins/kimchi/vms/%s' % name, self._create_task,
                           self.objstore, data)
 
@@ -198,6 +203,21 @@ class VMsModel(object):
         if nonascii_name is not None:
             meta_elements.append(E.name(nonascii_name))
 
+        # Set auth metadata
+	auth = config.get("authentication", "method")
+	access_elem = E.access()
+	auth_elem = E.auth(type=auth)
+	access_elem.append(auth_elem)
+	users = None
+        if "users" in params:
+            users = params["users"]
+            for user in users:
+                if not self.users.validate(user):
+                    raise InvalidParameter("KCHVM0027E", {'users': user})
+		else:
+                    auth_elem.append(E.user(user))
+
+	meta_elements.append(access_elem)
         set_metadata_node(VMModel.get_vm(name, self.conn), meta_elements)
         cb('OK', True)
 

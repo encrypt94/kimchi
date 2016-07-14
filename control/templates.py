@@ -39,7 +39,7 @@ class Templates(Collection):
     def __init__(self, model):
         super(Templates, self).__init__(model)
         self.role_key = 'templates'
-        self.admin_methods = ['GET', 'POST']
+        self.admin_methods = ['POST']
         self.resource = Template
         self.log_map = TEMPLATES_REQUESTS
 

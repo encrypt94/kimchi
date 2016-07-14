@@ -53,7 +53,6 @@ class VMs(AsyncCollection):
         super(VMs, self).__init__(model)
         self.resource = VM
         self.role_key = 'guests'
-        self.admin_methods = ['POST']
         self.log_map = VMS_REQUESTS
         self.log_args.update({'name': ''})
 

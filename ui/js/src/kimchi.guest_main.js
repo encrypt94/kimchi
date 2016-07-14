@@ -861,7 +861,7 @@ kimchi.guest_main = function() {
         // Default to showing list
         kimchi.showGuestList();
     }
-    if (wok.tabMode['guests'] === 'admin') {
+    if (wok.tabMode['guests'] === 'admin' || wok.tabMode['guests'] == 'byInstance') {
         $('.tools').attr('style', 'display');
         $("#vm-add").on("click", function(event) {
             wok.window.open('plugins/kimchi/guest-add.html');

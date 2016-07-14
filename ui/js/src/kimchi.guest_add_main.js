@@ -79,6 +79,7 @@ kimchi.guest_add_main = function() {
         $('#vm-doAdd').attr('style', 'display:none');
         $('#vm-doAdding').attr('style', 'display');
         var formData = $('#form-vm-add').serializeObject();
+	formData["users"] = [wok.cookie.get("username")];
         kimchi.createVM(formData, function() {
             kimchi.listVmsAuto();
             wok.window.close();
